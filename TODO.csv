@@ -1,0 +1,14 @@
+Сделать наполнение мок данных
+
+    public\mockData
+    public\mockData\categories.json
+    public\mockData\help.json
+    public\mockData\tickets.json
+    public\mockData\users.json
+
+Доступные поля ролям менеджмента и тем кто формирует сами формы отчетов для бизнеса
+
+    src\pages\TicketsPage\components\TicketFilters\TicketFilters.tsx
+
+Мб проработать бизнес формы/блоки форм стандартизированные и тд. 
+
