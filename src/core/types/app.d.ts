@@ -35,3 +35,9 @@ export interface ProblemCategory {
   id: number;
   name: string;
 }
+
+export interface Stats {
+  total: number;
+  open: number;
+  resolved: number;
+}

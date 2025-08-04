@@ -1,13 +1,13 @@
 import { ReactElement } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuthContext } from '@/app/providers/AuthProvider';
 
 interface GuestRouteProps {
   children: ReactElement;
 }
 
 const GuestRoute = ({ children }: GuestRouteProps) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuthContext();
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />;

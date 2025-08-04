@@ -1,58 +1,40 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useMemo,
-} from 'react';
-import { ThemeProvider as StyledThemeProvider } from 'styled-components';
-import { darkTheme } from './darkTheme';
-import { lightTheme } from './lightTheme';
-import { Theme, ThemeName } from './themeTypes';
+import React, { FC, ReactNode, createContext, useContext, useState, useEffect } from 'react';
+
+type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
   theme: Theme;
-  themeName: ThemeName;
   toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [themeName, setThemeName] = useState<ThemeName>('dark');
+export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as ThemeName | null;
-    const systemPrefersDark = window.matchMedia(
-      '(prefers-color-scheme: dark)'
-    ).matches;
-
-    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-    setThemeName(initialTheme);
-    document.body.setAttribute('data-theme', initialTheme);
+    const savedTheme = localStorage.getItem('theme') as Theme | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(prefersDark ? 'dark' : 'light');
+    }
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('theme', themeName);
-    document.body.setAttribute('data-theme', themeName);
-  }, [themeName]);
-
   const toggleTheme = () => {
-    setThemeName(prev => (prev === 'light' ? 'dark' : 'light'));
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
   };
 
-  const theme = useMemo(() => {
-    return themeName === 'light' ? lightTheme : darkTheme;
-  }, [themeName]);
-
-  const value = { theme, themeName, toggleTheme };
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   return (
-    <ThemeContext.Provider value={value}>
-      <StyledThemeProvider theme={theme}>
-        {children}
-      </StyledThemeProvider>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
     </ThemeContext.Provider>
   );
 };

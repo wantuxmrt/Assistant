@@ -1,4 +1,4 @@
 export * from './routesConfig';
-export * from './Router';
-export * from './PrivateRoute';
-export * from './GuestRoute';
+export { default as Router } from './Router';
+export { default as PrivateRoute } from './PrivateRoute';
+export { default as GuestRoute } from './GuestRoute';

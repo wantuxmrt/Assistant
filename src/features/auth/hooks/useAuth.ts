@@ -1,14 +1,20 @@
-import { useContext } from 'react';
-import { AuthContext } from '@/app/providers/AuthProvider';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/app/store';
+import { 
+  fetchCurrentUser, 
+  loginUser, 
+  registerUser, 
+  logoutUser 
+} from '../store/authSlice';
+import { LoginCredentials, RegisterData } from '../types/authTypes';
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  
-  return context;
-};
+  const dispatch: AppDispatch = useDispatch();
 
-export default useAuth;
+  return {
+    fetchCurrentUser: () => dispatch(fetchCurrentUser()),
+    login: (credentials: LoginCredentials) => dispatch(loginUser(credentials)),
+    register: (data: RegisterData) => dispatch(registerUser(data)),
+    logout: () => dispatch(logoutUser())
+  };
+};

@@ -1,5 +1,5 @@
 import httpClient from './httpClient';
-import { User } from '@/core/types/auth'; // Исправленный импорт
+import { User } from '@/core/types/auth';
 
 export const usersAPI = {
   getUsers: async (): Promise<User[]> => {

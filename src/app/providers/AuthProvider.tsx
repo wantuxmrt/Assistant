@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, FC, ReactNode } from 'react';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import { User } from '@/core/types/auth'; // Исправленный импорт
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/app/store';
+import { fetchCurrentUser, loginUser, logoutUser, registerUser } from '@/features/auth/store/authSlice';
+import { User } from '@/features/auth/types/authTypes';
 
 interface AuthContextType {
   user: User | null;
@@ -14,15 +16,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const dispatch: AppDispatch = useDispatch();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const { login: authLogin, logout: authLogout, register: authRegister, fetchCurrentUser } = useAuth();
 
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const currentUser = await fetchCurrentUser();
-        setUser(currentUser);
+        const resultAction = await dispatch(fetchCurrentUser());
+        if (fetchCurrentUser.fulfilled.match(resultAction)) {
+          setUser(resultAction.payload);
+        }
       } catch (error) {
         console.error('Failed to fetch user', error);
       } finally {
@@ -31,21 +35,40 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
     
     initAuth();
-  }, [fetchCurrentUser]);
+  }, [dispatch]);
 
   const login = async (credentials: { email: string; password: string }) => {
-    const userData = await authLogin(credentials);
-    setUser(userData.user);
+    setLoading(true);
+    try {
+      const resultAction = await dispatch(loginUser(credentials));
+      if (loginUser.fulfilled.match(resultAction)) {
+        setUser(resultAction.payload.user);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = async () => {
-    await authLogout();
-    setUser(null);
+    setLoading(true);
+    try {
+      await dispatch(logoutUser());
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const register = async (data: any) => {
-    const userData = await authRegister(data);
-    setUser(userData.user);
+    setLoading(true);
+    try {
+      const resultAction = await dispatch(registerUser(data));
+      if (registerUser.fulfilled.match(resultAction)) {
+        setUser(resultAction.payload.user);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const contextValue: AuthContextType = {

@@ -1,5 +1,6 @@
 import React, { FC, ReactNode } from 'react';
-import { ThemeProvider } from './ThemeProvider';
+import { Provider } from 'react-redux';
+import { store } from '@/app/store';
 import { AuthProvider } from './AuthProvider';
 
 interface AppProvidersProps {
@@ -8,8 +9,8 @@ interface AppProvidersProps {
 
 export const AppProviders: FC<AppProvidersProps> = ({ children }) => {
   return (
-    <ThemeProvider>
+    <Provider store={store}>
       <AuthProvider>{children}</AuthProvider>
-    </ThemeProvider>
+    </Provider>
   );
 };

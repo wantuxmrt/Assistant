@@ -1,6 +1,41 @@
-// Исправленный импорт httpClient
-import httpClient from '@/services/api/httpClient';
-import { LoginCredentials, RegisterData, AuthResponse, User } from '@/core/types/auth';
+import axios from 'axios';
+import { API_BASE_URL } from '@/core/constants/api.constants';
+import { 
+  LoginCredentials, 
+  RegisterData, 
+  AuthResponse, 
+  User 
+} from '../types/authTypes';
+
+const httpClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+httpClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+httpClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('authToken');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const authAPI = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
@@ -22,3 +57,5 @@ export const authAPI = {
     return response.data;
   }
 };
+
+export default httpClient;
