@@ -8,6 +8,12 @@ module.exports = {
     filename: 'bundle.js',
   },
   resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@/core': path.resolve(__dirname, 'src/core'),
+      '@/components': path.resolve(__dirname, 'src/components'),
+      '@/features': path.resolve(__dirname, 'src/features'),
+    },
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   module: {
